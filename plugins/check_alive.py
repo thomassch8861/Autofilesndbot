@@ -38,15 +38,6 @@ async def test_handler(client, message):
     #logger.info("Test command received")
     await message.reply_text("Test successful!")
 
-@Client.on_message(filters.command('hello') & filters.user(ADMINS))
-async def catch_all_handler(_, message):
-    try:
-        await message.reply_text("Hello!")
-        print(f"Received update: {message.text!r}")
-    except Exception as e:
-        print(f"Error: {e}")
-        await message.reply_text("An error occurred while processing your request.")
-    finally:
-        print("Finished processing the update.")
+
 
 

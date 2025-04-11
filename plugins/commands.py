@@ -821,3 +821,15 @@ async def deletemultiplefiles(bot, message):
             logger.info(f'File Found for your query {keyword}! Successfully deleted {file_name} from database.')
         deleted += 1
     await k.edit_text(text=f"<b>Process Completed for file deletion !\n\nSuccessfully deleted {str(deleted)} files from database for your query {keyword}.</b>")
+
+
+@Client.on_message(filters.command('hello') & filters.user(ADMINS))
+async def catch_all_handler(_, message):
+    try:
+        await message.reply_text("Hello!")
+        print(f"Received update: {message.text!r}")
+    except Exception as e:
+        print(f"Error: {e}")
+        await message.reply_text("An error occurred while processing your request.")
+    finally:
+        print("Finished processing the update.")
