@@ -32,3 +32,9 @@ async def ping(_, message):
     end_t = time.time()
     time_taken_s = (end_t - start_t) * 1000
     await rm.edit(f"𝖯𝗂𝗇𝗀!\n{time_taken_s:.3f} ms")
+
+@Client.on_message(filters.command("test"))
+async def test_handler(_, message):
+    #logger.info("Test command received")
+    await message.reply_text("Test successful!")
+
