@@ -39,7 +39,7 @@ async def gen_link_s(bot, message):
     await message.reply(f"Here is your Link:\nhttps://t.me/{temp.U_NAME}?start={outstr}")
     
     
-@Client.on_message(filters.command(['batch', 'pbatch']) & filters.create(allowed))
+@Client.on_message(filters.command(['batch', 'pbatch']))
 async def gen_link_batch(bot, message):
     logger.info("Batch mode started")
     logger.info(f'Message{message.text}')
