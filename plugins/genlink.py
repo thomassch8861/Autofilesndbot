@@ -39,14 +39,22 @@ async def gen_link_s(bot, message):
     
 @Client.on_message(filters.command(['batch', 'pbatch']) & filters.create(allowed))
 async def gen_link_batch(bot, message):
+    logger.info("Batch mode started")
+    logger.info(f'Message{message.text}')
     if " " not in message.text:
+        logger.info("Empty message")
         return await message.reply("Use correct format.\nExample <code>/batch https://t.me/kdramaworld_ongoing/10 https://t.me/kdramaworld_ongoing/20</code>.")
     links = message.text.strip().split(" ")
+    logger.info(f'Links: {links}')
     if len(links) != 3:
         return await message.reply("Use correct format.\nExample <code>/batch https://t.me/kdramaworld_ongoing/10 https://t.me/kdramaworld_ongoing/20</code>.")
     cmd, first, last = links
     regex = re.compile(r"(https://)?(t\.me/|telegram\.me/|telegram\.dog/)(c/)?(\d+|[a-zA-Z_0-9]+)/(\d+)$")
     match = regex.match(first)
+    logger.info(f'first{first}')
+    logger.info(f'last{last}')
+    logger.info(f'cmd{cmd}')
+    logger.info(f'match first{match}')
     if not match:
         return await message.reply('Invalid link')
     f_chat_id = match.group(4)
@@ -55,6 +63,7 @@ async def gen_link_batch(bot, message):
         f_chat_id  = int(("-100" + f_chat_id))
 
     match = regex.match(last)
+    logger.info(f'match last{match}')
     if not match:
         return await message.reply('Invalid link')
     l_chat_id = match.group(4)
