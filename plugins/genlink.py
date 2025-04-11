@@ -14,6 +14,8 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 async def allowed(_, __, message):
+    logger.info(f"Checking allowed for user: {message.from_user.id if message.from_user else 'No user'}")
+    logger.info(f"PUBLIC_FILE_STORE: {PUBLIC_FILE_STORE}, ADMINS: {ADMINS}")
     if PUBLIC_FILE_STORE:
         return True
     if message.from_user and message.from_user.id in ADMINS:
