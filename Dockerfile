@@ -1,4 +1,5 @@
-FROM python:3.13.3-slim-bullseye
+FROM python:3.13.3
+
 
 RUN apt update && apt upgrade -y
 RUN apt install git -y
