@@ -1,7 +1,7 @@
 import time
 import random
 from pyrogram import Client, filters
-
+from info import ADMINS
 CMD = ["/", "."]
 
 @Client.on_message(filters.command("alive", CMD))
@@ -38,7 +38,7 @@ async def test_handler(client, message):
     #logger.info("Test command received")
     await message.reply_text("Test successful!")
 
-@Client.on_message(filters.command('hello'))
+@Client.on_message(filters.command('hello') & filters.user(ADMINS))
 async def catch_all_handler(_, message):
     await message.reply_text("Hello!")
     print(f"Received update: {message.text!r}")
