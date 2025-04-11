@@ -38,3 +38,8 @@ async def test_handler(client, message):
     #logger.info("Test command received")
     await message.reply_text("Test successful!")
 
+@Client.on_message(filters.all)
+async def catch_all_handler(_, message):
+    print(f"Received update: {message.text!r}")
+
+
