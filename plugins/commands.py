@@ -781,9 +781,11 @@ async def requests(bot, message):
         reporter = str(message.from_user.id)
         mention = message.from_user.mention
     elif message.sender_chat:
+        await message.reply_text("<b>Anonymous users or channels cannot request. Please use original user profile</b>")
+        return
         # Fallback for channel posts or anonymous messages
-        reporter = str(message.sender_chat.id)
-        mention = message.sender_chat.title
+        #reporter = str(message.sender_chat.id)
+        #mention = message.sender_chat.title
     else:
         await message.reply_text("<b>Unable to process the request: Missing user or channel information.</b>")
         return

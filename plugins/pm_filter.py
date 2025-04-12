@@ -287,9 +287,9 @@ async def advantage_spoll_choker(bot, query):
     movie = movies[(int(movie_))]
     await query.answer(script.TOP_ALRT_MSG)
     gl = await global_filters(bot, query.message, text=movie)
-    if gl == False:
+    if not gl:
         k = await manual_filters(bot, query.message, text=movie)
-        if k == False:
+        if not k:
             files, offset, total_results = await get_search_results(query.message.chat.id, movie, offset=0, filter=True)
             if files:
                 k = (movie, files, offset, total_results)
@@ -1199,7 +1199,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             )
             reply_markup = InlineKeyboardMarkup(btn)
             await query.message.edit_text(
-                text=(script.OWNER_INFO),
+                text=script.OWNER_INFO,
                 reply_markup=reply_markup,
                 parse_mode=enums.ParseMode.HTML
             )
@@ -1792,7 +1792,7 @@ async def global_filters(client, message, text=False):
                                 reply_to_message_id=reply_id
                             )
                             manual = await manual_filters(client, message)
-                            if manual == False:
+                            if not manual:
                                 settings = await get_settings(message.chat.id)
                                 try:
                                     if settings['auto_ffilter']:
@@ -1845,7 +1845,7 @@ async def global_filters(client, message, text=False):
                                 reply_to_message_id=reply_id
                             )
                             manual = await manual_filters(client, message)
-                            if manual == False:
+                            if not manual:
                                 settings = await get_settings(message.chat.id)
                                 try:
                                     if settings['auto_ffilter']:
@@ -1896,7 +1896,7 @@ async def global_filters(client, message, text=False):
                             reply_to_message_id=reply_id
                         )
                         manual = await manual_filters(client, message)
-                        if manual == False:
+                        if not manual:
                             settings = await get_settings(message.chat.id)
                             try:
                                 if settings['auto_ffilter']:
@@ -1948,7 +1948,7 @@ async def global_filters(client, message, text=False):
                             reply_to_message_id=reply_id
                         )
                         manual = await manual_filters(client, message)
-                        if manual == False:
+                        if not manual:
                             settings = await get_settings(message.chat.id)
                             try:
                                 if settings['auto_ffilter']:
