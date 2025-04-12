@@ -147,3 +147,5 @@ cython_debug/
 config.py
 .goutputstream-VAFWB1
 result.json
+
+.idea
