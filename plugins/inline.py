@@ -1,11 +1,13 @@
 import logging
-from pyrogram import Client, emoji, filters
+
+from pyrogram import Client, emoji, enums
 from pyrogram.errors.exceptions.bad_request_400 import QueryIdInvalid
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultCachedDocument, InlineQuery
-from database.ia_filterdb import get_search_results
-from utils import is_subscribed, get_size, temp
-from info import CACHE_TIME, AUTH_USERS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION
+
 from database.connections_mdb import active_connection
+from database.ia_filterdb import get_search_results
+from info import CACHE_TIME, AUTH_USERS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, KEEP_ORIGINAL_CAPTION
+from utils import is_subscribed, get_size, temp
 
 logger = logging.getLogger(__name__)
 cache_time = 0 if AUTH_USERS or AUTH_CHANNEL else CACHE_TIME
@@ -61,7 +63,12 @@ async def answer(bot, query):
         title=file.file_name
         size=get_size(file.file_size)
         f_caption=file.caption
-        if CUSTOM_FILE_CAPTION:
+        if KEEP_ORIGINAL_CAPTION:
+            try:
+                f_caption = file.caption
+            except:
+                f_caption = f"<code>{title}</code>"
+        elif CUSTOM_FILE_CAPTION:
             try:
                 f_caption=CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
             except Exception as e:
@@ -74,6 +81,7 @@ async def answer(bot, query):
                 title=file.file_name,
                 document_file_id=file.file_id,
                 caption=f_caption,
+                parse_mode=enums.ParseMode.HTML if KEEP_ORIGINAL_CAPTION else enums.ParseMode.DEFAULT,
                 description=f'Size: {get_size(file.file_size)}\nType: {file.file_type}',
                 reply_markup=reply_markup))
 

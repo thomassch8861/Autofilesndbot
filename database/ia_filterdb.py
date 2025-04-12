@@ -47,7 +47,7 @@ async def save_file(media):
     # Unpack the new file_id into file_id and file_ref
     file_id, file_ref = unpack_new_file_id(media.file_id)
     # Normalize the file name (replace special characters with spaces)
-    file_name = re.sub(r"(_|\-|\.|\+)", " ", str(media.file_name))
+    file_name = re.sub(r"([_\-.+])", " ", str(media.file_name))
     try:
         file = Media(
             file_id=file_id,
@@ -63,7 +63,7 @@ async def save_file(media):
         return False, 2
     else:
         try:
-            await file.commit()
+            await file.commit() # type: ignore
         except DuplicateKeyError:
             logger.warning(
                 f'{getattr(media, "file_name", "NO_FILE")} is already saved in the database.'

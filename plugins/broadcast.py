@@ -25,7 +25,7 @@ async def verupikkals(bot, message):
         pti, sh = await broadcast_messages(int(user['id']), b_msg)
         if pti:
             success += 1
-        elif pti == False:
+        elif not pti:
             if sh == "Blocked":
                 blocked+=1
             elif sh == "Deleted":

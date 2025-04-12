@@ -1,12 +1,15 @@
-import os
-from pyrogram import Client, filters, enums
-from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
-from info import IMDB_TEMPLATE
-from utils import extract_user, get_file_id, get_poster, last_online
-import time
-from datetime import datetime
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 import logging
+import os
+from datetime import datetime
+
+from pyrogram import Client, filters, enums
+from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, MediaEmpty, PhotoInvalidDimensions, \
+    WebpageMediaEmpty
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+
+from info import IMDB_TEMPLATE
+from utils import extract_user, get_file_id, get_poster
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
@@ -81,7 +84,7 @@ async def who_is(client, message):
     message_out_str += f"<b>➲Data Centre:</b> <code>{dc_id}</code>\n"
     message_out_str += f"<b>➲User Name:</b> @{username}\n"
     message_out_str += f"<b>➲User 𝖫𝗂𝗇𝗄:</b> <a href='tg://user?id={from_user.id}'><b>Click Here</b></a>\n"
-    if message.chat.type in ((enums.ChatType.SUPERGROUP, enums.ChatType.CHANNEL)):
+    if message.chat.type in (enums.ChatType.SUPERGROUP, enums.ChatType.CHANNEL):
         try:
             chat_member_p = await message.chat.get_member(from_user.id)
             joined_date = (

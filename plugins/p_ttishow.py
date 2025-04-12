@@ -1,14 +1,15 @@
-from pyrogram import Client, filters, enums
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
-from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong, PeerIdInvalid
-from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, MELCOW_VID
-from database.users_chats_db import db
-from database.ia_filterdb import Media
-from utils import get_size, temp, get_settings
-from Script import script
-from pyrogram.errors import ChatAdminRequired
-import asyncio 
+import asyncio
 
+from pyrogram import Client, filters, enums
+from pyrogram.errors import ChatAdminRequired
+from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong, PeerIdInvalid
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
+from Script import script
+from database.ia_filterdb import Media
+from database.users_chats_db import db
+from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, MELCOW_VID
+from utils import get_size, temp, get_settings
 
 
 @Client.on_message(filters.new_chat_members & filters.group)
@@ -54,7 +55,7 @@ async def save_group(bot, message):
                     except:
                         pass
                 temp.MELCOW['welcome'] = await message.reply_video(
-                                                 video=(MELCOW_VID),
+                                                 video=MELCOW_VID,
                                                  caption=(script.MELCOW_ENG.format(u.mention, message.chat.title)),
                                                  reply_markup=InlineKeyboardMarkup(
         [[
@@ -67,7 +68,9 @@ async def save_group(bot, message):
                 
         if settings["auto_delete"]:
             await asyncio.sleep(600)
-            await (temp.MELCOW['welcome']).delete()
+            if 'welcome' in temp.MELCOW and temp.MELCOW['welcome']:
+                await temp.MELCOW['welcome'].delete()
+
                 
                
 
