@@ -13,7 +13,7 @@ from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait,
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 
 from database.users_chats_db import db
-from info import AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM, CUSTOM_FILE_CAPTION
+import info
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -44,7 +44,7 @@ class temp(object):
 
 async def is_subscribed(bot, query):
     try:
-        user = await bot.get_chat_member(AUTH_CHANNEL, query.from_user.id)
+        user = await bot.get_chat_member(info.AUTH_CHANNEL, query.from_user.id)
     except UserNotParticipant:
         pass
     except Exception as e:
@@ -94,7 +94,7 @@ async def get_poster(query, bulk=False, id=False, file=None):
     else:
         date = "N/A"
     plot = ""
-    if not LONG_IMDB_DESCRIPTION:
+    if not info.LONG_IMDB_DESCRIPTION:
         plot = movie.get('plot')
         if plot and len(plot) > 0:
             plot = plot[0]
@@ -262,8 +262,8 @@ def list_to_str(k):
         return "N/A"
     elif len(k) == 1:
         return str(k[0])
-    elif MAX_LIST_ELM:
-        k = k[:int(MAX_LIST_ELM)]
+    elif info.MAX_LIST_ELM:
+        k = k[:int(info.MAX_LIST_ELM)]
         return ' '.join(f'{elem}, ' for elem in k)
     else:
         return ' '.join(f'{elem}, ' for elem in k)
@@ -450,9 +450,14 @@ async def send_all(bot, userid, files, ident):
         f_caption = file.caption
         title = file.file_name
         size = get_size(file.file_size)
-        if CUSTOM_FILE_CAPTION:
+        if info.KEEP_ORIGINAL_CAPTION:
             try:
-                f_caption = CUSTOM_FILE_CAPTION.format(file_name='' if title is None else title,
+                f_caption = file.caption
+            except:
+                f_caption = f"{title}"
+        elif info.CUSTOM_FILE_CAPTION:
+            try:
+                f_caption = info.CUSTOM_FILE_CAPTION.format(file_name='' if title is None else title,
                                                         file_size='' if size is None else size,
                                                         file_caption='' if f_caption is None else f_caption)
             except Exception as e:
