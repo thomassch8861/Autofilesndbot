@@ -22,5 +22,6 @@ COPY . .
 # Expose port 8000
 EXPOSE 8000
 
+RUN chmod +x start.sh
 # Start your application
-CMD ["python", "bot.py"]
+CMD ["bash", "start.sh"]
