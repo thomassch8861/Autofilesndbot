@@ -2,6 +2,7 @@ import os
 import logging
 import random
 import asyncio
+import sys
 from Script import script
 from pyrogram import Client, filters, enums
 from pyrogram.errors import ChatAdminRequired, FloodWait
@@ -19,7 +20,7 @@ import base64
 import time
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-
+RESTART_FILE = "restart_msg.txt"
 
 BATCH_FILES = {}
 
@@ -1108,73 +1109,32 @@ async def ping(_, message):
     time_taken_s = (end_t - start_t) * 1000
     await rm.edit(f"𝖯𝗂𝗇𝗀!\n{time_taken_s:.3f} ms")
 
+@Client.on_message(filters.command("restart") & filters.user(info.ADMINS) &filters.private)
+async def restart_bot(client, message):
+    # Send a message and capture the returned message object
+    restart_msg = await message.reply_text("♻️ Restarting bot... Please wait.")
+    # Save the chat id and message id to a file (using a delimiter, e.g., "|")
+    with open(RESTART_FILE, "w") as f:
+        f.write(f"{message.chat.id}|{restart_msg.message_id}")
+    # Wait a moment to ensure the message is sent
+    await asyncio.sleep(2)
+    # Restart the current process (Docker will auto-restart the container)
+    os.execl(sys.executable, sys.executable, *sys.argv)
 
-@Client.on_message(filters.command("syncdb") & filters.user(info.ADMINS))
-async def syncdb_command(client, message):
-    """
-    /syncdb command reloads the configuration from the database and updates
-    the module-level variables in the info.py file.
-    """
-    start_time = time.time()
-    # First, send a temporary reply letting the user know sync is in progress.
-    status_message = await message.reply_text("Syncing database configuration...")
 
-    try:
-        # Re-initialize configuration from MongoDB.
-        new_config = info.initialize_configuration()
+async def update_restart_status(client):
+    if os.path.exists(RESTART_FILE):
+        with open(RESTART_FILE, "r") as f:
+            data = f.read().strip().split("|")
+        if len(data) == 2:
+            chat_id, message_id = data
+            try:
+                await client.edit_message_text(
+                    chat_id=int(chat_id),
+                    message_id=int(message_id),
+                    text="✅ Successfully restarted!"
+                )
+            except Exception as e:
+                print("Failed to update restart message:", e)
+        os.remove(RESTART_FILE)
 
-        # Update the module-level variables in the info module.
-        # If you have many settings, you might wrap this in a helper function.
-        info.PORT = new_config.get("PORT", info.PORT)
-        info.SESSION = new_config.get("SESSION", info.SESSION)
-        info.CACHE_TIME = new_config.get("CACHE_TIME", info.CACHE_TIME)
-        info.USE_CAPTION_FILTER = new_config.get("USE_CAPTION_FILTER", info.USE_CAPTION_FILTER)
-        info.PICS = new_config.get("PICS", info.PICS)
-        info.NOR_IMG = new_config.get("NOR_IMG", info.NOR_IMG)
-        info.MELCOW_VID = new_config.get("MELCOW_VID", info.MELCOW_VID)
-        info.SPELL_IMG = new_config.get("SPELL_IMG", info.SPELL_IMG)
-        info.ADMINS = new_config.get("ADMINS", info.ADMINS)
-        info.CHANNELS = new_config.get("CHANNELS", info.CHANNELS)
-        info.AUTH_USERS = new_config.get("AUTH_USERS", info.AUTH_USERS)
-        info.AUTH_CHANNEL = new_config.get("AUTH_CHANNEL", info.AUTH_CHANNEL)
-        info.AUTH_GROUPS = new_config.get("AUTH_GROUPS", info.AUTH_GROUPS)
-        info.REQST_CHANNEL = new_config.get("REQST_CHANNEL", info.REQST_CHANNEL)
-        info.SUPPORT_CHAT_ID = new_config.get("SUPPORT_CHAT_ID", info.SUPPORT_CHAT_ID)
-        info.NO_RESULTS_MSG = new_config.get("NO_RESULTS_MSG", info.NO_RESULTS_MSG)
-        info.DELETE_CHANNELS = new_config.get("DELETE_CHANNELS", info.DELETE_CHANNELS)
-        info.MAX_B_TN = new_config.get("MAX_B_TN", info.MAX_B_TN)
-        info.MAX_BTN = new_config.get("MAX_BTN", info.MAX_BTN)
-        info.LOG_CHANNEL = new_config.get("LOG_CHANNEL", info.LOG_CHANNEL)
-        info.SUPPORT_CHAT = new_config.get("SUPPORT_CHAT", info.SUPPORT_CHAT)
-        info.P_TTI_SHOW_OFF = new_config.get("P_TTI_SHOW_OFF", info.P_TTI_SHOW_OFF)
-        info.IMDB = new_config.get("IMDB", info.IMDB)
-        info.AUTO_FFILTER = new_config.get("AUTO_FFILTER", info.AUTO_FFILTER)
-        info.AUTO_DELETE = new_config.get("AUTO_DELETE", info.AUTO_DELETE)
-        info.SINGLE_BUTTON = new_config.get("SINGLE_BUTTON", info.SINGLE_BUTTON)
-        info.CUSTOM_FILE_CAPTION = new_config.get("CUSTOM_FILE_CAPTION", info.CUSTOM_FILE_CAPTION)
-        info.BATCH_FILE_CAPTION = new_config.get("BATCH_FILE_CAPTION", info.BATCH_FILE_CAPTION)
-        info.IMDB_TEMPLATE = new_config.get("IMDB_TEMPLATE", info.IMDB_TEMPLATE)
-        info.LONG_IMDB_DESCRIPTION = new_config.get("LONG_IMDB_DESCRIPTION", info.LONG_IMDB_DESCRIPTION)
-        #info.SPELL_CHECK_REPLY = new_config.get("SPELL_CHECK_REPLY", info.SPELL_CHECK_REPLY)
-        info.MAX_LIST_ELM = new_config.get("MAX_LIST_ELM", info.MAX_LIST_ELM)
-        info.INDEX_REQ_CHANNEL = new_config.get("INDEX_REQ_CHANNEL", info.INDEX_REQ_CHANNEL)
-        info.FILE_STORE_CHANNEL = new_config.get("FILE_STORE_CHANNEL", info.FILE_STORE_CHANNEL)
-        info.MELCOW_NEW_USERS = new_config.get("MELCOW_NEW_USERS", info.MELCOW_NEW_USERS)
-        info.PROTECT_CONTENT = new_config.get("PROTECT_CONTENT", info.PROTECT_CONTENT)
-        info.PUBLIC_FILE_STORE = new_config.get("PUBLIC_FILE_STORE", info.PUBLIC_FILE_STORE)
-        info.KEEP_ORIGINAL_CAPTION = new_config.get("KEEP_ORIGINAL_CAPTION", info.KEEP_ORIGINAL_CAPTION)
-        info.SPELL_CHECK_REPLY = new_config.get("SPELL_CHECK_REPLY", info.SPELL_CHECK_REPLY)
-        logger.info("Updated SPELL_CHECK_REPLY: %s", info.SPELL_CHECK_REPLY)
-
-        # Optionally, log the sync action
-        logger.info("Database configuration synced successfully.")
-
-        # Create a success message
-        end_time = time.time()
-        elapsed_ms = (end_time - start_time) * 1000
-        await status_message.edit_text(
-            f"Database configuration synced successfully in {elapsed_ms:.3f} ms."
-        )
-    except Exception as e:
-        logger.exception("Error syncing configuration from database.")
-        await status_message.edit_text(f"Error syncing configuration: {e}")

@@ -20,7 +20,7 @@ from datetime import date, datetime
 import pytz
 from aiohttp import web
 from plugins import web_server
-
+from plugins.commands import update_restart_status
 
 class Bot(Client):
     def __init__(self):
@@ -41,6 +41,7 @@ class Bot(Client):
         temp.BANNED_CHATS = b_chats
 
         await super().start()
+        await update_restart_status(self)
         await Media.ensure_indexes()
         me = await self.get_me()
         temp.ME = me.id
