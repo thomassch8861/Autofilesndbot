@@ -1,5 +1,5 @@
 import motor.motor_asyncio
-from info import DATABASE_NAME, DATABASE_URI, IMDB, IMDB_TEMPLATE, MELCOW_NEW_USERS, P_TTI_SHOW_OFF, SINGLE_BUTTON, SPELL_CHECK_REPLY, PROTECT_CONTENT, AUTO_DELETE, AUTO_FFILTER, MAX_BTN
+import info
 
 class Database:
     
@@ -100,16 +100,16 @@ class Database:
         
     async def get_settings(self, id):
         default = {
-            'button': SINGLE_BUTTON,
-            'botpm': P_TTI_SHOW_OFF,
-            'file_secure': PROTECT_CONTENT,
-            'imdb': IMDB,
-            'spell_check': SPELL_CHECK_REPLY,
-            'welcome': MELCOW_NEW_USERS,
-            'auto_delete': AUTO_DELETE,
-            'auto_ffilter': AUTO_FFILTER,
-            'max_btn': MAX_BTN,
-            'template': IMDB_TEMPLATE
+            'button': info.SINGLE_BUTTON,
+            'botpm': info.P_TTI_SHOW_OFF,
+            'file_secure': info.PROTECT_CONTENT,
+            'imdb': info.IMDB,
+            'spell_check': info.SPELL_CHECK_REPLY,
+            'welcome': info.MELCOW_NEW_USERS,
+            'auto_delete': info.AUTO_DELETE,
+            'auto_ffilter': info.AUTO_FFILTER,
+            'max_btn': info.MAX_BTN,
+            'template': info.IMDB_TEMPLATE
         }
         chat_doc = await self.grp.find_one({'id': int(id)})
         if chat_doc:
@@ -137,4 +137,4 @@ class Database:
         return stats.get('dataSize', 0)
 
 
-db = Database(DATABASE_URI, DATABASE_NAME)
+db = Database(info.DATABASE_URI, info.DATABASE_NAME)

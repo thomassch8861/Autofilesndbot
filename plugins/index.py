@@ -8,10 +8,8 @@ from pyrogram.errors.exceptions.bad_request_400 import ChannelInvalid, ChatAdmin
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from database.ia_filterdb import save_file
-from info import ADMINS
-from info import INDEX_REQ_CHANNEL as LOG_CHANNEL
 from utils import temp
-
+import info
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 lock = asyncio.Lock()
@@ -35,7 +33,7 @@ async def index_files(bot, query):
     msg = query.message
 
     await query.answer('Processing...⏳', show_alert=True)
-    if int(from_user) not in ADMINS:
+    if int(from_user) not in info.ADMINS:
         await bot.send_message(int(from_user),
                                f'Your Submission for indexing {chat} has been accepted by our moderators and will be added soon.',
                                reply_to_message_id=int(lst_msg_id))
@@ -84,7 +82,7 @@ async def send_for_index(bot, message):
     if k.empty:
         return await message.reply('This may be group and iam not a admin of the group.')
 
-    if message.from_user.id in ADMINS:
+    if message.from_user.id in info.ADMINS:
         buttons = [
             [
                 InlineKeyboardButton('Yes',
@@ -117,13 +115,13 @@ async def send_for_index(bot, message):
         ]
     ]
     reply_markup = InlineKeyboardMarkup(buttons)
-    await bot.send_message(LOG_CHANNEL,
+    await bot.send_message(info.INDEX_REQ_CHANNEL,
                            f'#IndexRequest\n\nBy : {message.from_user.mention} (<code>{message.from_user.id}</code>)\nChat ID/ Username - <code> {chat_id}</code>\nLast Message ID - <code>{last_msg_id}</code>\nInviteLink - {link}',
                            reply_markup=reply_markup)
     await message.reply('ThankYou For the Contribution, Wait For My Moderators to verify the files.')
 
 
-@Client.on_message(filters.command('setskip') & filters.user(ADMINS))
+@Client.on_message(filters.command('setskip') & filters.user(info.ADMINS))
 async def set_skip_number(bot, message):
     if ' ' in message.text:
         _, skip = message.text.split(" ")

@@ -8,15 +8,15 @@ from pymongo.errors import DuplicateKeyError
 from umongo import Instance, Document, fields
 from motor.motor_asyncio import AsyncIOMotorClient
 from marshmallow.exceptions import ValidationError
-from info import DATABASE_URI, DATABASE_NAME, COLLECTION_NAME, USE_CAPTION_FILTER, MAX_B_TN
+import info
 from utils import get_settings, save_group_settings
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 # Initialize asynchronous client, database and uMongo instance.
-client = AsyncIOMotorClient(DATABASE_URI)
-db = client[DATABASE_NAME]
+client = AsyncIOMotorClient(info.DATABASE_URI)
+db = client[info.DATABASE_NAME]
 instance = Instance.from_db(db)
 
 @instance.register
@@ -31,7 +31,7 @@ class Media(Document):
 
     class Meta:
         indexes = ('$file_name', )
-        collection_name = COLLECTION_NAME
+        collection_name = info.COLLECTION_NAME
 
 
 async def save_file(media):
@@ -80,11 +80,11 @@ async def get_search_results(chat_id, query, file_type=None, max_results=10, off
     if chat_id is not None:
         settings = await get_settings(int(chat_id))
         try:
-            max_results = 10 if settings['max_btn'] else int(MAX_B_TN)
+            max_results = 10 if settings['max_btn'] else int(info.MAX_B_TN)
         except KeyError:
             await save_group_settings(int(chat_id), 'max_btn', False)
             settings = await get_settings(int(chat_id))
-            max_results = 10 if settings['max_btn'] else int(MAX_B_TN)
+            max_results = 10 if settings['max_btn'] else int(info.MAX_B_TN)
 
     # Clean and prepare the query pattern
     query = re.sub(r"[-:\"';!]", " ", query)
@@ -101,7 +101,7 @@ async def get_search_results(chat_id, query, file_type=None, max_results=10, off
     except Exception:
         return []
 
-    if USE_CAPTION_FILTER:
+    if info.USE_CAPTION_FILTER:
         mongo_filter = {'$or': [{'file_name': regex}, {'caption': regex}]}
     else:
         mongo_filter = {'file_name': regex}
@@ -137,7 +137,7 @@ async def get_bad_files(query, file_type=None, filter=False):
     except Exception:
         return []
 
-    if USE_CAPTION_FILTER:
+    if info.USE_CAPTION_FILTER:
         mongo_filter = {'$or': [{'file_name': regex}, {'caption': regex}]}
     else:
         mongo_filter = {'file_name': regex}

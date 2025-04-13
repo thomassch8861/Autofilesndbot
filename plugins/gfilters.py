@@ -9,7 +9,7 @@ from database.gfilters_mdb import (
     delete_gfilter,
     count_gfilters
 )
-from info import ADMINS
+import info
 from utils import get_file_id, gfilterparser, split_quotes
 
 
@@ -80,7 +80,7 @@ from utils import get_file_id, gfilterparser, split_quotes
 #         quote=True,
 #         parse_mode=enums.ParseMode.MARKDOWN
 #     )
-@Client.on_message(filters.command(['gfilter', 'addg']) & filters.incoming & filters.user(ADMINS))
+@Client.on_message(filters.command(['gfilter', 'addg']) & filters.incoming & filters.user(info.ADMINS))
 async def addgfilter(client, message):
     args = message.text.html.split(None, 1)
 
@@ -153,7 +153,7 @@ async def addgfilter(client, message):
     )
 
 
-@Client.on_message(filters.command(['viewgfilters', 'gfilters']) & filters.incoming & filters.user(ADMINS))
+@Client.on_message(filters.command(['viewgfilters', 'gfilters']) & filters.incoming & filters.user(info.ADMINS))
 async def get_all_gfilters(client, message):
     texts = await get_gfilters('gfilters')
     count = await count_gfilters('gfilters')
@@ -182,7 +182,7 @@ async def get_all_gfilters(client, message):
         parse_mode=enums.ParseMode.MARKDOWN
     )
         
-@Client.on_message(filters.command('delg') & filters.incoming & filters.user(ADMINS))
+@Client.on_message(filters.command('delg') & filters.incoming & filters.user(info.ADMINS))
 async def deletegfilter(client, message):
     try:
         cmd, text = message.text.split(" ", 1)
@@ -199,7 +199,7 @@ async def deletegfilter(client, message):
 
     await delete_gfilter(message, query, 'gfilters')
 
-@Client.on_message(filters.command('delallg') & filters.user(ADMINS))
+@Client.on_message(filters.command('delallg') & filters.user(info.ADMINS))
 async def delallgfilters(client, message):
     await message.reply_text(
             f"Do you want to continue??",

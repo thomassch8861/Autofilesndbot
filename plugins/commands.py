@@ -9,7 +9,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors.exceptions.bad_request_400 import ChannelInvalid, UsernameInvalid, UsernameNotModified
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id, get_bad_files
 from database.users_chats_db import db
-from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, PICS, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, SUPPORT_CHAT, PROTECT_CONTENT, REQST_CHANNEL, SUPPORT_CHAT_ID, MAX_B_TN, FILE_STORE_CHANNEL, PUBLIC_FILE_STORE, KEEP_ORIGINAL_CAPTION, initialize_configuration
+#from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, PICS, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, SUPPORT_CHAT, PROTECT_CONTENT, REQST_CHANNEL, SUPPORT_CHAT_ID, MAX_B_TN, FILE_STORE_CHANNEL, PUBLIC_FILE_STORE, KEEP_ORIGINAL_CAPTION, initialize_configuration
 import info
 from utils import get_settings, get_size, is_subscribed, save_group_settings, temp
 from database.connections_mdb import active_connection
@@ -32,7 +32,7 @@ async def start(client, message):
                     InlineKeyboardButton('➕ ᴀᴅᴅ ᴍᴇ ᴛᴏ ɢʀᴏᴜᴘ ➕', url=f"https://t.me/{temp.U_NAME}?startgroup=true")
                 ],[
                     InlineKeyboardButton('ᴏᴡɴᴇʀ', callback_data="owner_info"),
-                    InlineKeyboardButton('ꜱᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ', url=f"https://t.me/{SUPPORT_CHAT}")
+                    InlineKeyboardButton('ꜱᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ', url=f"https://t.me/{info.SUPPORT_CHAT}")
                 ],[
                     InlineKeyboardButton('ʜᴇʟᴘ', callback_data='help'),
                     InlineKeyboardButton('ᴀʙᴏᴜᴛ', callback_data='about')
@@ -44,18 +44,18 @@ async def start(client, message):
         await asyncio.sleep(2)
         if not await db.get_chat(message.chat.id):
             total=await client.get_chat_members_count(message.chat.id)
-            await client.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, "Unknown"))       
+            await client.send_message(info.LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, "Unknown"))
             await db.add_chat(message.chat.id, message.chat.title)
         return 
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
-        await client.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention))
+        await client.send_message(info.LOG_CHANNEL, script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention))
     if len(message.command) != 2:
         buttons = [[
                     InlineKeyboardButton('➕ ᴀᴅᴅ ᴍᴇ ᴛᴏ ɢʀᴏᴜᴘ ➕', url=f"https://t.me/{temp.U_NAME}?startgroup=true")
                 ],[
                     InlineKeyboardButton('ᴏᴡɴᴇʀ', callback_data="owner_info"),
-                    InlineKeyboardButton('ꜱᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ', url=f"https://t.me/{SUPPORT_CHAT}")
+                    InlineKeyboardButton('ꜱᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ', url=f"https://t.me/{info.SUPPORT_CHAT}")
                 ],[
                     InlineKeyboardButton('ʜᴇʟᴘ', callback_data='help'),
                     InlineKeyboardButton('ᴀʙᴏᴜᴛ', callback_data='about'),
@@ -64,15 +64,15 @@ async def start(client, message):
                   ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_photo(
-            photo=random.choice(PICS),
+            photo=random.choice(info.PICS),
             caption=script.START_TXT.format(message.from_user.mention, temp.U_NAME, temp.B_NAME),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
         return
-    if AUTH_CHANNEL and not await is_subscribed(client, message):
+    if info.AUTH_CHANNEL and not await is_subscribed(client, message):
         try:
-            invite_link = await client.create_chat_invite_link(int(AUTH_CHANNEL))
+            invite_link = await client.create_chat_invite_link(int(info.AUTH_CHANNEL))
         except ChatAdminRequired:
             logger.error("Make sure Bot is admin in Forcesub channel")
             return
@@ -103,7 +103,7 @@ async def start(client, message):
                     InlineKeyboardButton('➕ ᴀᴅᴅ ᴍᴇ ᴛᴏ ɢʀᴏᴜᴘ ➕', url=f"https://t.me/{temp.U_NAME}?startgroup=true")
                 ],[
                     InlineKeyboardButton('ᴏᴡɴᴇʀ', callback_data="owner_info"),
-                    InlineKeyboardButton('ꜱᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ', url=f"https://t.me/{SUPPORT_CHAT}")
+                    InlineKeyboardButton('ꜱᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ', url=f"https://t.me/{info.SUPPORT_CHAT}")
                 ],[
                     InlineKeyboardButton('ʜᴇʟᴘ', callback_data='help'),
                     InlineKeyboardButton('ᴀʙᴏᴜᴛ', callback_data='about')
@@ -113,7 +113,7 @@ async def start(client, message):
                   ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_photo(
-            photo=random.choice(PICS),
+            photo=random.choice(info.PICS),
             caption=script.START_TXT.format(message.from_user.mention, temp.U_NAME, temp.B_NAME),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
@@ -137,14 +137,14 @@ async def start(client, message):
             size=get_size(file.file_size)
             #f_caption=file.caption
             f_caption = None
-            if KEEP_ORIGINAL_CAPTION:
+            if info.KEEP_ORIGINAL_CAPTION:
                 try:
                     f_caption = file.caption
                 except :
                     f_caption = file.file_name
-            elif CUSTOM_FILE_CAPTION:
+            elif info.CUSTOM_FILE_CAPTION:
                 try:
-                    f_caption=CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
+                    f_caption=info.CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
                 except:
                     f_caption=f_caption
             if f_caption is None:
@@ -154,7 +154,7 @@ async def start(client, message):
                 file_id=file.file_id,
                 caption=f_caption,
                 protect_content=True if pre == 'filep' else False,
-                parse_mode=enums.ParseMode.HTML if KEEP_ORIGINAL_CAPTION else enums.ParseMode.DEFAULT,
+                parse_mode=enums.ParseMode.HTML if info.KEEP_ORIGINAL_CAPTION else enums.ParseMode.DEFAULT,
                 reply_markup=InlineKeyboardMarkup( [ [ InlineKeyboardButton('⎋ Main Channel ⎋', url="https://t.me/kdramaworld_ongoing") ] ] ),
             )
         return
@@ -170,7 +170,7 @@ async def start(client, message):
                     msgs=json.loads(file_data.read())
             except:
                 await sts.edit("FAILED")
-                return await client.send_message(LOG_CHANNEL, "UNABLE TO OPEN FILE.")
+                return await client.send_message(info.LOG_CHANNEL, "UNABLE TO OPEN FILE.")
             os.remove(file)
             BATCH_FILES[file_id] = msgs
         for msg in msgs:
@@ -178,14 +178,14 @@ async def start(client, message):
             size=get_size(int(msg.get("size", 0)))
             #f_caption=msg.get("caption", "")
             f_caption = None
-            if KEEP_ORIGINAL_CAPTION:
+            if info.KEEP_ORIGINAL_CAPTION:
                 try:
                     f_caption = msg.get("caption")
                 except:
                     f_caption = msg.get("title")
-            elif BATCH_FILE_CAPTION:
+            elif info.BATCH_FILE_CAPTION:
                 try:
-                    f_caption=BATCH_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
+                    f_caption=info.BATCH_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
                 except Exception as e:
                     logger.exception(e)
                     f_caption=f_caption
@@ -197,7 +197,7 @@ async def start(client, message):
                     file_id=msg.get("file_id"),
                     caption=f_caption,
                     protect_content=msg.get('protect', False),
-                    parse_mode= enums.ParseMode.HTML if KEEP_ORIGINAL_CAPTION else enums.ParseMode.DEFAULT,
+                    parse_mode= enums.ParseMode.HTML if info.KEEP_ORIGINAL_CAPTION else enums.ParseMode.DEFAULT,
                     reply_markup=InlineKeyboardMarkup( [ [ InlineKeyboardButton('⎋ Main Channel ⎋', url="https://t.me/kdramaworld_ongoing") ] ] ),
                     
                 )
@@ -208,7 +208,7 @@ async def start(client, message):
                     chat_id=message.from_user.id,
                     file_id=msg.get("file_id"),
                     caption=f_caption,
-                    parse_mode=enums.ParseMode.HTML if KEEP_ORIGINAL_CAPTION else enums.ParseMode.DEFAULT,
+                    parse_mode=enums.ParseMode.HTML if info.KEEP_ORIGINAL_CAPTION else enums.ParseMode.DEFAULT,
                     protect_content=msg.get('protect', False),
                     reply_markup=InlineKeyboardMarkup( [ [ InlineKeyboardButton('⎋ Main Channel ⎋', url="https://t.me/kdramaworld_ongoing") ] ] ),
                 )
@@ -226,20 +226,20 @@ async def start(client, message):
             f_msg_id, l_msg_id, f_chat_id, protect = decoded.split("_", 3)
         except:
             f_msg_id, l_msg_id, f_chat_id = decoded.split("_", 2)
-            protect = "/pbatch" if PROTECT_CONTENT else "batch"
+            protect = "/pbatch" if info.PROTECT_CONTENT else "batch"
         diff = int(l_msg_id) - int(f_msg_id)
         async for msg in client.iter_messages(int(f_chat_id), int(l_msg_id), int(f_msg_id)):
             if msg.media:
                 media = getattr(msg, msg.media.value)
 
-                if KEEP_ORIGINAL_CAPTION:
+                if info.KEEP_ORIGINAL_CAPTION:
                     try:
                         f_caption = getattr(msg,'caption','')
                     except:
                         f_caption = getattr(media, 'file_name', '')
-                elif BATCH_FILE_CAPTION:
+                elif info.BATCH_FILE_CAPTION:
                     try:
-                        f_caption=BATCH_FILE_CAPTION.format(file_name=getattr(media, 'file_name', ''), file_size=getattr(media, 'file_size', ''), file_caption=getattr(msg, 'caption', ''))
+                        f_caption=info.BATCH_FILE_CAPTION.format(file_name=getattr(media, 'file_name', ''), file_size=getattr(media, 'file_size', ''), file_caption=getattr(msg, 'caption', ''))
                     except Exception as e:
                         logger.exception(e)
                         f_caption = getattr(msg, 'caption', '')
@@ -277,7 +277,7 @@ async def start(client, message):
             msg = await client.send_cached_media(
                 chat_id=message.from_user.id,
                 file_id=file_id,
-                parse_mode=enums.ParseMode.HTML if KEEP_ORIGINAL_CAPTION else enums.ParseMode.DEFAULT,
+                parse_mode=enums.ParseMode.HTML if info.KEEP_ORIGINAL_CAPTION else enums.ParseMode.DEFAULT,
                 protect_content=True if pre == 'filep' else False,
                 reply_markup=InlineKeyboardMarkup( [ [ InlineKeyboardButton('⎋ Main Channel ⎋', url="https://t.me/kdramaworld_ongoing") ] ] ),
             )
@@ -286,14 +286,14 @@ async def start(client, message):
             title = file.file_name
             size=get_size(file.file_size)
             f_caption = f"<code>{title}</code>"
-            if KEEP_ORIGINAL_CAPTION:
+            if info.KEEP_ORIGINAL_CAPTION:
                 try:
                     f_caption = file.caption
                 except:
                     f_caption = f"<code>{title}</code>"
-            elif CUSTOM_FILE_CAPTION:
+            elif info.CUSTOM_FILE_CAPTION:
                 try:
-                    f_caption=CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='')
+                    f_caption=info.CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='')
                 except:
                     return
             await msg.edit_caption(f_caption)
@@ -305,14 +305,14 @@ async def start(client, message):
     title = files.file_name
     size=get_size(files.file_size)
     f_caption=files.caption
-    if KEEP_ORIGINAL_CAPTION:
+    if info.KEEP_ORIGINAL_CAPTION:
         try:
             f_caption = files.caption
         except:
             f_caption = f"<code>{title}</code>"
-    elif CUSTOM_FILE_CAPTION:
+    elif info.CUSTOM_FILE_CAPTION:
         try:
-            f_caption=CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
+            f_caption=info.CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
         except Exception as e:
             logger.exception(e)
             f_caption=f_caption
@@ -322,20 +322,20 @@ async def start(client, message):
         chat_id=message.from_user.id,
         file_id=file_id,
         caption=f_caption,
-        parse_mode=enums.ParseMode.HTML if KEEP_ORIGINAL_CAPTION else enums.ParseMode.DEFAULT,
+        parse_mode=enums.ParseMode.HTML if info.KEEP_ORIGINAL_CAPTION else enums.ParseMode.DEFAULT,
         protect_content=True if pre == 'filep' else False,
         reply_markup=InlineKeyboardMarkup( [ [ InlineKeyboardButton('⎋ Main Channel ⎋', url="https://t.me/kdramaworld_ongoing") ] ] ),
     )
                     
 
-@Client.on_message(filters.command('channel') & filters.user(ADMINS))
+@Client.on_message(filters.command('channel') & filters.user(info.ADMINS))
 async def channel_info(bot, message):
            
     """Send basic information of channel"""
-    if isinstance(CHANNELS, (int, str)):
-        channels = [CHANNELS]
-    elif isinstance(CHANNELS, list):
-        channels = CHANNELS
+    if isinstance(info.CHANNELS, (int, str)):
+        channels = [info.CHANNELS]
+    elif isinstance(info.CHANNELS, list):
+        channels = info.CHANNELS
     else:
         raise ValueError("Unexpected type of CHANNELS")
 
@@ -347,7 +347,7 @@ async def channel_info(bot, message):
         else:
             text += '\n' + chat.title or chat.first_name
 
-    text += f'\n\n**Total:** {len(CHANNELS)}'
+    text += f'\n\n**Total:** {len(info.CHANNELS)}'
 
     if len(text) < 4096:
         await message.reply(text)
@@ -359,7 +359,7 @@ async def channel_info(bot, message):
         os.remove(file)
 
 
-@Client.on_message(filters.command('logs') & filters.user(ADMINS))
+@Client.on_message(filters.command('logs') & filters.user(info.ADMINS))
 async def log_file(bot, message):
     """Send log file"""
     try:
@@ -367,7 +367,7 @@ async def log_file(bot, message):
     except Exception as e:
         await message.reply(str(e))
 
-@Client.on_message(filters.command('delete') & filters.user(ADMINS))
+@Client.on_message(filters.command('delete') & filters.user(info.ADMINS))
 async def delete(bot, message):
     """Delete file from database"""
     reply = message.reply_to_message
@@ -413,7 +413,7 @@ async def delete(bot, message):
                 await msg.edit('File not found in database')
 
 
-@Client.on_message(filters.command('deleteall') & filters.user(ADMINS))
+@Client.on_message(filters.command('deleteall') & filters.user(info.ADMINS))
 async def delete_all_index(bot, message):
     await message.reply_text(
         'This will delete all indexed files.\nDo you want to continue??',
@@ -474,7 +474,7 @@ async def settings(client, message):
     if (
             st.status != enums.ChatMemberStatus.ADMINISTRATOR
             and st.status != enums.ChatMemberStatus.OWNER
-            and str(userid) not in ADMINS
+            and str(userid) not in info.ADMINS
     ):
         return
     
@@ -575,7 +575,7 @@ async def settings(client, message):
                     callback_data=f'setgs#max_btn#{settings["max_btn"]}#{grp_id}',
                 ),
                 InlineKeyboardButton(
-                    '10' if settings["max_btn"] else f'{MAX_B_TN}',
+                    '10' if settings["max_btn"] else f'{info.MAX_B_TN}',
                     callback_data=f'setgs#max_btn#{settings["max_btn"]}#{grp_id}',
                 ),
             ],
@@ -604,7 +604,7 @@ async def settings(client, message):
                 reply_to_message_id=message.id
             )
 
-@Client.on_message(filters.command("send") & filters.user(ADMINS))
+@Client.on_message(filters.command("send") & filters.user(info.ADMINS))
 async def send_msg(bot, message):
     if message.reply_to_message:
         target_id = message.text
@@ -667,7 +667,7 @@ async def save_template(client, message):
     if (
             st.status != enums.ChatMemberStatus.ADMINISTRATOR
             and st.status != enums.ChatMemberStatus.OWNER
-            and str(userid) not in ADMINS
+            and str(userid) not in info.ADMINS
     ):
         return
 
@@ -772,7 +772,7 @@ async def save_template(client, message):
 )
 async def requests(bot, message):
     # Preliminary check: Ensure that SUPPORT_CHAT_ID and REQST_CHANNEL are defined when required.
-    if REQST_CHANNEL is None or SUPPORT_CHAT_ID is None:
+    if info.REQST_CHANNEL is None or info.SUPPORT_CHAT_ID is None:
         return
 
     reported_post = None
@@ -793,26 +793,26 @@ async def requests(bot, message):
 
     success = True
     # Depending on the context of the message, determine the content and handle accordingly:
-    if message.reply_to_message and SUPPORT_CHAT_ID == message.chat.id:
+    if message.reply_to_message and info.SUPPORT_CHAT_ID == message.chat.id:
         chat_id = message.chat.id
         content = message.reply_to_message.text
         try:
             if len(content) < 3:
                 await message.reply_text("<b>You must type about your request [Minimum 3 Characters]. Requests can't be empty.</b>")
                 success = False
-            elif REQST_CHANNEL is not None:
+            elif info.REQST_CHANNEL is not None:
                 btn = [[
                         InlineKeyboardButton('📥 𝖵𝗂𝖾𝗐 𝖱𝖾𝗊𝗎𝖾𝗌𝗍 📥', url=f"{message.reply_to_message.link}"),
                         InlineKeyboardButton('📝 𝖲𝗁𝗈𝗐 𝖮𝗉𝗍𝗂𝗈𝗇𝗌 📝', callback_data=f'show_option#{reporter}')
                       ]]
                 reported_post = await bot.send_message(
-                    chat_id=REQST_CHANNEL,
+                    chat_id=info.REQST_CHANNEL,
                     text=f"<b>𝖱𝖾𝗉𝗈𝗋𝗍𝖾𝗋 : {mention} ({reporter})\n\n𝖬𝖾𝗌𝗌𝖺𝗀𝖾 : {content}</b>",
                     reply_markup=InlineKeyboardMarkup(btn)
                 )
             else:
                 # Optionally send to ADMINS if REQST_CHANNEL is not defined
-                for admin in ADMINS:
+                for admin in info.ADMINS:
                     btn = [[
                             InlineKeyboardButton('📥 𝖵𝗂𝖾𝗐 𝖱𝖾𝗊𝗎𝖾𝗌𝗍 📥', url=f"{message.reply_to_message.link}"),
                             InlineKeyboardButton('📝 𝖲𝗁𝗈𝗐 𝖮𝗉𝗍𝗂𝗈𝗇𝗌 📝', callback_data=f'show_option#{reporter}')
@@ -826,7 +826,7 @@ async def requests(bot, message):
             await message.reply_text(f"Error: {e}")
             return
 
-    elif SUPPORT_CHAT_ID == message.chat.id:
+    elif info.SUPPORT_CHAT_ID == message.chat.id:
         chat_id = message.chat.id
         content = message.text
         # Remove keywords before processing
@@ -836,18 +836,18 @@ async def requests(bot, message):
             if len(content) < 3:
                 await message.reply_text("<b>You must type about your request [Minimum 3 Characters]. Requests can't be empty.</b>")
                 return
-            if REQST_CHANNEL is not None:
+            if info.REQST_CHANNEL is not None:
                 btn = [[
                         InlineKeyboardButton('📥 𝖵𝗂𝖾𝗐 𝖱𝖾𝗊𝗎𝖾𝗌𝗍 📥', url=f"{message.link}"),
                         InlineKeyboardButton('📝 𝖲𝗁𝗈𝗐 𝖮𝗉𝗍𝗂𝗈𝗇𝗌 📝', callback_data=f'show_option#{reporter}')
                       ]]
                 reported_post = await bot.send_message(
-                    chat_id=REQST_CHANNEL,
+                    chat_id=info.REQST_CHANNEL,
                     text=f"<b>𝖱𝖾𝗉𝗈𝗋𝗍𝖾𝗋 : {mention} ({reporter})\n\n𝖬𝖾𝗌𝗌𝖺𝗀𝖾 : {content}</b>",
                     reply_markup=InlineKeyboardMarkup(btn)
                 )
             else:
-                for admin in ADMINS:
+                for admin in info.ADMINS:
                     btn = [[
                         InlineKeyboardButton('📥 𝖵𝗂𝖾𝗐 𝖱𝖾𝗊𝗎𝖾𝗌𝗍 📥', url=f"{message.link}"),
                         InlineKeyboardButton('📝 𝖲𝗁𝗈𝗐 𝖮𝗉𝗍𝗂𝗈𝗇𝗌 📝', callback_data=f'show_option#{reporter}')
@@ -877,7 +877,7 @@ async def requests(bot, message):
         await message.reply_text("<b>Your request has been added! Please wait for some time.</b>", reply_markup=InlineKeyboardMarkup(btn))
 
 
-@Client.on_message(filters.command("usend") & filters.user(ADMINS))
+@Client.on_message(filters.command("usend") & filters.user(info.ADMINS))
 async def send_msg(bot, message):
     if message.reply_to_message:
         target_id = message.text.split(" ", 1)[1]
@@ -903,7 +903,7 @@ async def send_msg(bot, message):
     else:
         await message.reply_text("<b>Error𝖢𝗈𝗆𝗆𝖺𝗇𝖽 𝖨𝗇𝖼𝗈𝗆𝗉𝗅𝖾𝗍𝖾 !</b>")
         
-@Client.on_message(filters.command("send") & filters.user(ADMINS))
+@Client.on_message(filters.command("send") & filters.user(info.ADMINS))
 async def send_msg(bot, message):
     if message.reply_to_message:
         target_id = message.text.split(" ", 1)[1]
@@ -929,7 +929,7 @@ async def send_msg(bot, message):
     else:
         await message.reply_text("<b>Use this command as a reply to any message using the target chat id. For eg: /send userid</b>")
 
-@Client.on_message(filters.command("gsend") & filters.user(ADMINS))
+@Client.on_message(filters.command("gsend") & filters.user(info.ADMINS))
 async def send_chatmsg(bot, message):
     if message.reply_to_message:
         target_id = message.text.split(" ", 1)[1]
@@ -955,7 +955,7 @@ async def send_chatmsg(bot, message):
     else:
         await message.reply_text("<b>Error𝖢𝗈𝗆𝗆𝖺𝗇𝖽 𝖨𝗇𝖼𝗈𝗆𝗉𝗅𝖾𝗍𝖾 !</b>")
 
-@Client.on_message(filters.command("deletefiles") & filters.user(ADMINS))
+@Client.on_message(filters.command("deletefiles") & filters.user(info.ADMINS))
 async def deletemultiplefiles(bot, message):
     chat_type = message.chat.type
     if chat_type != enums.ChatType.PRIVATE:
@@ -984,9 +984,9 @@ async def deletemultiplefiles(bot, message):
     await k.edit_text(text=f"<b>Process Completed for file deletion !\n\nSuccessfully deleted {str(deleted)} files from database for your query {keyword}.</b>")
 
 async def allowed(_, __, message):
-    if PUBLIC_FILE_STORE:
+    if info.PUBLIC_FILE_STORE:
         return True
-    if message.from_user and message.from_user.id in ADMINS:
+    if message.from_user and message.from_user.id in info.ADMINS:
         return True
     return False
 
@@ -998,7 +998,7 @@ async def gen_link_s(bot, message):
     file_type = replied.media
     if file_type not in [enums.MessageMediaType.VIDEO, enums.MessageMediaType.AUDIO, enums.MessageMediaType.DOCUMENT]:
         return await message.reply("Reply to a supported media")
-    if message.has_protected_content and message.chat.id not in ADMINS:
+    if message.has_protected_content and message.chat.id not in info.ADMINS:
         return await message.reply("okDa")
     file_id, ref = unpack_new_file_id((getattr(replied, file_type.value)).file_id)
     string = 'filep_' if message.text.lower().strip() == "/plink" else 'file_'
@@ -1043,7 +1043,7 @@ async def gen_link_batch(bot, message):
         return await message.reply(f'Errors - {e}')
 
     sts = await message.reply("Generating link for your message.\nThis may take time depending upon number of messages")
-    if chat_id in FILE_STORE_CHANNEL:
+    if chat_id in info.FILE_STORE_CHANNEL:
         string = f"{f_msg_id}_{l_msg_id}_{chat_id}_{cmd.lower().strip()}"
         b_64 = base64.urlsafe_b64encode(string.encode("ascii")).decode().strip("=")
         return await sts.edit(f"Here is your link https://t.me/{temp.U_NAME}?start=DSTORE-{b_64}")
@@ -1089,7 +1089,7 @@ async def gen_link_batch(bot, message):
                 pass
     with open(f"batchmode_{message.from_user.id}.json", "w+", encoding="utf-8") as out:
         out.write(json.dumps(outlist))
-    post = await bot.send_document(LOG_CHANNEL, f"batchmode_{message.from_user.id}.json", file_name="Batch.json", caption="⚠️Generated for filestore.")
+    post = await bot.send_document(info.LOG_CHANNEL, f"batchmode_{message.from_user.id}.json", file_name="Batch.json", caption="⚠️Generated for filestore.")
     os.remove(f"batchmode_{message.from_user.id}.json")
     file_id, ref = unpack_new_file_id(post.document.file_id)
     await sts.edit(f"Here is your link\nContains `{og_msg}` files.\n https://t.me/{temp.U_NAME}?start=BATCH-{file_id}")
@@ -1109,7 +1109,7 @@ async def ping(_, message):
     await rm.edit(f"𝖯𝗂𝗇𝗀!\n{time_taken_s:.3f} ms")
 
 
-@Client.on_message(filters.command("syncdb") & filters.user(ADMINS))
+@Client.on_message(filters.command("syncdb") & filters.user(info.ADMINS))
 async def syncdb_command(client, message):
     """
     /syncdb command reloads the configuration from the database and updates
@@ -1121,7 +1121,7 @@ async def syncdb_command(client, message):
 
     try:
         # Re-initialize configuration from MongoDB.
-        new_config = initialize_configuration()
+        new_config = info.initialize_configuration()
 
         # Update the module-level variables in the info module.
         # If you have many settings, you might wrap this in a helper function.

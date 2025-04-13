@@ -6,8 +6,7 @@ from pyrogram import Client, filters, enums
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, MediaEmpty, PhotoInvalidDimensions, \
     WebpageMediaEmpty
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-
-from info import IMDB_TEMPLATE
+import info
 from utils import extract_user, get_file_id, get_poster
 
 logger = logging.getLogger(__name__)
@@ -164,7 +163,7 @@ async def imdb_callback(bot: Client, quer_y: CallbackQuery):
         ]
     message = quer_y.message.reply_to_message or quer_y.message
     if imdb:
-        caption = IMDB_TEMPLATE.format(
+        caption = info.IMDB_TEMPLATE.format(
             query = imdb['title'],
             title = imdb['title'],
             votes = imdb['votes'],

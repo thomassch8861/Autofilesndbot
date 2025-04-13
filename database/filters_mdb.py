@@ -1,13 +1,13 @@
 import motor.motor_asyncio
-from info import DATABASE_URI, DATABASE_NAME
+import info
 from pyrogram import enums
 import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
-client = motor.motor_asyncio.AsyncIOMotorClient(DATABASE_URI)
-db = client[DATABASE_NAME]
+client = motor.motor_asyncio.AsyncIOMotorClient(info.DATABASE_URI)
+db = client[info.DATABASE_NAME]
 
 
 async def add_filter(grp_id, text, reply_text, btn, file, alert):

@@ -8,7 +8,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from Script import script
 from database.ia_filterdb import Media
 from database.users_chats_db import db
-from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, MELCOW_VID
+import info
 from utils import get_size, temp, get_settings
 
 
@@ -19,11 +19,11 @@ async def save_group(bot, message):
         if not await db.get_chat(message.chat.id):
             total=await bot.get_chat_members_count(message.chat.id)
             r_j = message.from_user.mention if message.from_user else "Anonymous" 
-            await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, r_j))       
+            await bot.send_message(info.LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, r_j))
             await db.add_chat(message.chat.id, message.chat.title)
         if message.chat.id in temp.BANNED_CHATS:
             buttons = [[
-                InlineKeyboardButton(' 𝖲𝗎𝗉𝗉𝗈𝗋𝗍 ', url=f"https://t.me/{SUPPORT_CHAT}")
+                InlineKeyboardButton(' 𝖲𝗎𝗉𝗉𝗈𝗋𝗍 ', url=f"https://t.me/{info.SUPPORT_CHAT}")
             ]]
             reply_markup=InlineKeyboardMarkup(buttons)
             k = await message.reply(
@@ -38,7 +38,7 @@ async def save_group(bot, message):
             await bot.leave_chat(message.chat.id)
             return
         buttons = [[
-            InlineKeyboardButton(' 𝖲𝖴𝖯𝖯𝖮𝖱𝖳 ', url=f"https://t.me/{SUPPORT_CHAT}"),
+            InlineKeyboardButton(' 𝖲𝖴𝖯𝖯𝖮𝖱𝖳 ', url=f"https://t.me/{info.SUPPORT_CHAT}"),
             InlineKeyboardButton(' Main Channel ', url="https://t.me/kdramaworld_ongoing")
         ]]
         reply_markup=InlineKeyboardMarkup(buttons)
@@ -55,11 +55,11 @@ async def save_group(bot, message):
                     except:
                         pass
                 temp.MELCOW['welcome'] = await message.reply_video(
-                                                 video=MELCOW_VID,
+                                                 video=info.MELCOW_VID,
                                                  caption=(script.MELCOW_ENG.format(u.mention, message.chat.title)),
                                                  reply_markup=InlineKeyboardMarkup(
         [[
-            InlineKeyboardButton(' 𝖲𝖴𝖯𝖯𝖮𝖱𝖳 ', url=f"https://t.me/{SUPPORT_CHAT}"),
+            InlineKeyboardButton(' 𝖲𝖴𝖯𝖯𝖮𝖱𝖳 ', url=f"https://t.me/{info.SUPPORT_CHAT}"),
             InlineKeyboardButton(' Main Channel ', url="https://t.me/kdramaworld_ongoing")
         ]]
                                                  ),
@@ -76,7 +76,7 @@ async def save_group(bot, message):
 
 
 
-@Client.on_message(filters.command('leave') & filters.user(ADMINS))
+@Client.on_message(filters.command('leave') & filters.user(info.ADMINS))
 async def leave_a_chat(bot, message):
     if len(message.command) == 1:
         return await message.reply('Give me a chat id')
@@ -87,7 +87,7 @@ async def leave_a_chat(bot, message):
         chat = chat
     try:
         buttons = [[
-            InlineKeyboardButton(' 𝖲𝖴𝖯𝖯𝖮𝖱𝖳 ', url=f"https://t.me/{SUPPORT_CHAT}"),
+            InlineKeyboardButton(' 𝖲𝖴𝖯𝖯𝖮𝖱𝖳 ', url=f"https://t.me/{info.SUPPORT_CHAT}"),
             InlineKeyboardButton(' 𝖴𝗉𝖽𝖺𝗍𝖾𝗌 ', url="https://t.me/kdramaworld_ongoing")
         ]]
         reply_markup=InlineKeyboardMarkup(buttons)
@@ -102,7 +102,7 @@ async def leave_a_chat(bot, message):
     except Exception as e:
         await message.reply(f'Error - {e}')
 
-@Client.on_message(filters.command('disable') & filters.user(ADMINS))
+@Client.on_message(filters.command('disable') & filters.user(info.ADMINS))
 async def disable_chat(bot, message):
     if len(message.command) == 1:
         return await message.reply('Give me a chat id')
@@ -127,7 +127,7 @@ async def disable_chat(bot, message):
     await message.reply('Chat Successfully Disabled')
     try:
         buttons = [[
-            InlineKeyboardButton(' 𝖲𝖴𝖯𝖯𝖮𝖱𝖳  ', url=f"https://t.me/{SUPPORT_CHAT}"),
+            InlineKeyboardButton(' 𝖲𝖴𝖯𝖯𝖮𝖱𝖳  ', url=f"https://t.me/{info.SUPPORT_CHAT}"),
             InlineKeyboardButton(' 𝖴𝗉𝖽𝖺𝗍𝖾𝗌 ', url="https://t.me/kdramaworld_ongoing")
         ]]
         reply_markup=InlineKeyboardMarkup(buttons)
@@ -140,7 +140,7 @@ async def disable_chat(bot, message):
         await message.reply(f"Error - {e}")
 
 
-@Client.on_message(filters.command('enable') & filters.user(ADMINS))
+@Client.on_message(filters.command('enable') & filters.user(info.ADMINS))
 async def re_enable_chat(bot, message):
     if len(message.command) == 1:
         return await message.reply('Give me a chat id')
@@ -171,7 +171,7 @@ async def get_ststs(bot, message):
     free = get_size(free)
     await rju.edit(script.STATUS_TXT.format(files, total_users, totl_chats, size, free))
 
-@Client.on_message(filters.command('invite') & filters.user(ADMINS))
+@Client.on_message(filters.command('invite') & filters.user(info.ADMINS))
 async def gen_invite(bot, message):
     if len(message.command) == 1:
         return await message.reply('Give me a chat id')
@@ -188,7 +188,7 @@ async def gen_invite(bot, message):
         return await message.reply(f'Error {e}')
     await message.reply(f'Here is your Invite Link {link.invite_link}')
 
-@Client.on_message(filters.command('ban') & filters.user(ADMINS))
+@Client.on_message(filters.command('ban') & filters.user(info.ADMINS))
 async def ban_a_user(bot, message):
     if len(message.command) == 1:
         return await message.reply('Give me a user id / username')
@@ -221,7 +221,7 @@ async def ban_a_user(bot, message):
 
 
     
-@Client.on_message(filters.command('unban') & filters.user(ADMINS))
+@Client.on_message(filters.command('unban') & filters.user(info.ADMINS))
 async def unban_a_user(bot, message):
     if len(message.command) == 1:
         return await message.reply('Give me a user id / username')
@@ -254,7 +254,7 @@ async def unban_a_user(bot, message):
 
 
     
-@Client.on_message(filters.command('users') & filters.user(ADMINS))
+@Client.on_message(filters.command('users') & filters.user(info.ADMINS))
 async def list_users(bot, message):
     raju = await message.reply('Getting List Of Users')
     users = await db.get_all_users()
@@ -272,7 +272,7 @@ async def list_users(bot, message):
             outfile.write(out)
         await message.reply_document('users.txt', caption="List Of Users")
 
-@Client.on_message(filters.command('chats') & filters.user(ADMINS))
+@Client.on_message(filters.command('chats') & filters.user(info.ADMINS))
 async def list_chats(bot, message):
     raju = await message.reply('Getting List Of chats')
     chats = await db.get_all_chats()  # this returns a list of chats

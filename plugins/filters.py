@@ -10,7 +10,7 @@ from database.filters_mdb import(
 
 from database.connections_mdb import active_connection
 from utils import get_file_id, parser, split_quotes
-from info import ADMINS
+import info
 
 
 # @Client.on_message(filters.command(['filter', 'addf']) & filters.incoming)
@@ -146,7 +146,7 @@ async def addfilter(client, message):
     if (
         st.status != enums.ChatMemberStatus.ADMINISTRATOR
         and st.status != enums.ChatMemberStatus.OWNER
-        and str(userid) not in ADMINS
+        and str(userid) not in info.ADMINS
     ):
         return
 
@@ -254,7 +254,7 @@ async def get_all(client, message):
     if (
         st.status != enums.ChatMemberStatus.ADMINISTRATOR
         and st.status != enums.ChatMemberStatus.OWNER
-        and str(userid) not in ADMINS
+        and str(userid) not in info.ADMINS
     ):
         return
 
@@ -317,7 +317,7 @@ async def deletefilter(client, message):
     if (
         st.status != enums.ChatMemberStatus.ADMINISTRATOR
         and st.status != enums.ChatMemberStatus.OWNER
-        and str(userid) not in ADMINS
+        and str(userid) not in info.ADMINS
     ):
         return
 
@@ -367,7 +367,7 @@ async def delallconfirm(client, message):
 
 
     st = await client.get_chat_member(grp_id, userid)
-    if (st.status == enums.ChatMemberStatus.OWNER) or (str(userid) in ADMINS):
+    if (st.status == enums.ChatMemberStatus.OWNER) or (str(userid) in info.ADMINS):
         await message.reply_text(
             f"This will delete all filters from '{title}'.\nDo you want to continue??",
             reply_markup=InlineKeyboardMarkup([

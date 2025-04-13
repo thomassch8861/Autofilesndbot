@@ -6,11 +6,11 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQue
 
 from database.connections_mdb import active_connection
 from database.ia_filterdb import get_search_results
-from info import CACHE_TIME, AUTH_USERS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, KEEP_ORIGINAL_CAPTION
+import info
 from utils import is_subscribed, get_size, temp
 
 logger = logging.getLogger(__name__)
-cache_time = 0 if AUTH_USERS or AUTH_CHANNEL else CACHE_TIME
+cache_time = 0 if info.AUTH_USERS or info.AUTH_CHANNEL else info.CACHE_TIME
 
 async def inline_users(query: InlineQuery):
     # if AUTH_USERS:
@@ -34,7 +34,7 @@ async def answer(bot, query):
                            switch_pm_parameter="hehe")
         return
 
-    if AUTH_CHANNEL and not await is_subscribed(bot, query):
+    if info.AUTH_CHANNEL and not await is_subscribed(bot, query):
         await query.answer(results=[],
                            cache_time=0,
                            switch_pm_text='𝖸𝗈𝗎 𝖧𝖺𝗏𝖾 𝖳𝗈 𝖲𝗎𝖻𝗌𝖼𝗋𝗂𝖻𝖾 𝖬𝗒 𝖢𝗁𝖺𝗇𝗇𝖾𝗅 𝖳𝗈 𝖴𝗌𝖾 𝖬𝖾 :)',
@@ -63,14 +63,14 @@ async def answer(bot, query):
         title=file.file_name
         size=get_size(file.file_size)
         f_caption=file.caption
-        if KEEP_ORIGINAL_CAPTION:
+        if info.KEEP_ORIGINAL_CAPTION:
             try:
                 f_caption = file.caption
             except:
                 f_caption = f"<code>{title}</code>"
-        elif CUSTOM_FILE_CAPTION:
+        elif info.CUSTOM_FILE_CAPTION:
             try:
-                f_caption=CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
+                f_caption=info.CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
             except Exception as e:
                 logger.exception(e)
                 f_caption=f_caption
@@ -81,7 +81,7 @@ async def answer(bot, query):
                 title=file.file_name,
                 document_file_id=file.file_id,
                 caption=f_caption,
-                parse_mode=enums.ParseMode.HTML if KEEP_ORIGINAL_CAPTION else enums.ParseMode.DEFAULT,
+                parse_mode=enums.ParseMode.HTML if info.KEEP_ORIGINAL_CAPTION else enums.ParseMode.DEFAULT,
                 description=f'Size: {get_size(file.file_size)}\nType: {file.file_type}',
                 reply_markup=reply_markup))
 

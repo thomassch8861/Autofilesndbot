@@ -1,13 +1,13 @@
 import motor.motor_asyncio
-from info import DATABASE_URI, DATABASE_NAME
+import info
 import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
 # Create an asynchronous MongoDB client using Motor.
-client = motor.motor_asyncio.AsyncIOMotorClient(DATABASE_URI)
-db = client[DATABASE_NAME]
+client = motor.motor_asyncio.AsyncIOMotorClient(info.DATABASE_URI)
+db = client[info.DATABASE_NAME]
 collection = db['CONNECTION']
 
 
