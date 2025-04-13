@@ -9,7 +9,8 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors.exceptions.bad_request_400 import ChannelInvalid, UsernameInvalid, UsernameNotModified
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id, get_bad_files
 from database.users_chats_db import db
-from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, PICS, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, SUPPORT_CHAT, PROTECT_CONTENT, REQST_CHANNEL, SUPPORT_CHAT_ID, MAX_B_TN, FILE_STORE_CHANNEL, PUBLIC_FILE_STORE, KEEP_ORIGINAL_CAPTION
+from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, PICS, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, SUPPORT_CHAT, PROTECT_CONTENT, REQST_CHANNEL, SUPPORT_CHAT_ID, MAX_B_TN, FILE_STORE_CHANNEL, PUBLIC_FILE_STORE, KEEP_ORIGINAL_CAPTION, initialize_configuration
+import info
 from utils import get_settings, get_size, is_subscribed, save_group_settings, temp
 from database.connections_mdb import active_connection
 import re
@@ -17,7 +18,7 @@ import json
 import base64
 import time
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 
 BATCH_FILES = {}
@@ -1106,3 +1107,72 @@ async def ping(_, message):
     end_t = time.time()
     time_taken_s = (end_t - start_t) * 1000
     await rm.edit(f"𝖯𝗂𝗇𝗀!\n{time_taken_s:.3f} ms")
+
+
+@Client.on_message(filters.command("syncdb") & filters.user(ADMINS))
+async def syncdb_command(client, message):
+    """
+    /syncdb command reloads the configuration from the database and updates
+    the module-level variables in the info.py file.
+    """
+    start_time = time.time()
+    # First, send a temporary reply letting the user know sync is in progress.
+    status_message = await message.reply_text("Syncing database configuration...")
+
+    try:
+        # Re-initialize configuration from MongoDB.
+        new_config = initialize_configuration()
+
+        # Update the module-level variables in the info module.
+        # If you have many settings, you might wrap this in a helper function.
+        info.PORT = new_config.get("PORT", info.PORT)
+        info.SESSION = new_config.get("SESSION", info.SESSION)
+        info.CACHE_TIME = new_config.get("CACHE_TIME", info.CACHE_TIME)
+        info.USE_CAPTION_FILTER = new_config.get("USE_CAPTION_FILTER", info.USE_CAPTION_FILTER)
+        info.PICS = new_config.get("PICS", info.PICS)
+        info.NOR_IMG = new_config.get("NOR_IMG", info.NOR_IMG)
+        info.MELCOW_VID = new_config.get("MELCOW_VID", info.MELCOW_VID)
+        info.SPELL_IMG = new_config.get("SPELL_IMG", info.SPELL_IMG)
+        info.ADMINS = new_config.get("ADMINS", info.ADMINS)
+        info.CHANNELS = new_config.get("CHANNELS", info.CHANNELS)
+        info.AUTH_USERS = new_config.get("AUTH_USERS", info.AUTH_USERS)
+        info.AUTH_CHANNEL = new_config.get("AUTH_CHANNEL", info.AUTH_CHANNEL)
+        info.AUTH_GROUPS = new_config.get("AUTH_GROUPS", info.AUTH_GROUPS)
+        info.REQST_CHANNEL = new_config.get("REQST_CHANNEL", info.REQST_CHANNEL)
+        info.SUPPORT_CHAT_ID = new_config.get("SUPPORT_CHAT_ID", info.SUPPORT_CHAT_ID)
+        info.NO_RESULTS_MSG = new_config.get("NO_RESULTS_MSG", info.NO_RESULTS_MSG)
+        info.DELETE_CHANNELS = new_config.get("DELETE_CHANNELS", info.DELETE_CHANNELS)
+        info.MAX_B_TN = new_config.get("MAX_B_TN", info.MAX_B_TN)
+        info.MAX_BTN = new_config.get("MAX_BTN", info.MAX_BTN)
+        info.LOG_CHANNEL = new_config.get("LOG_CHANNEL", info.LOG_CHANNEL)
+        info.SUPPORT_CHAT = new_config.get("SUPPORT_CHAT", info.SUPPORT_CHAT)
+        info.P_TTI_SHOW_OFF = new_config.get("P_TTI_SHOW_OFF", info.P_TTI_SHOW_OFF)
+        info.IMDB = new_config.get("IMDB", info.IMDB)
+        info.AUTO_FFILTER = new_config.get("AUTO_FFILTER", info.AUTO_FFILTER)
+        info.AUTO_DELETE = new_config.get("AUTO_DELETE", info.AUTO_DELETE)
+        info.SINGLE_BUTTON = new_config.get("SINGLE_BUTTON", info.SINGLE_BUTTON)
+        info.CUSTOM_FILE_CAPTION = new_config.get("CUSTOM_FILE_CAPTION", info.CUSTOM_FILE_CAPTION)
+        info.BATCH_FILE_CAPTION = new_config.get("BATCH_FILE_CAPTION", info.BATCH_FILE_CAPTION)
+        info.IMDB_TEMPLATE = new_config.get("IMDB_TEMPLATE", info.IMDB_TEMPLATE)
+        info.LONG_IMDB_DESCRIPTION = new_config.get("LONG_IMDB_DESCRIPTION", info.LONG_IMDB_DESCRIPTION)
+        info.SPELL_CHECK_REPLY = new_config.get("SPELL_CHECK_REPLY", info.SPELL_CHECK_REPLY)
+        info.MAX_LIST_ELM = new_config.get("MAX_LIST_ELM", info.MAX_LIST_ELM)
+        info.INDEX_REQ_CHANNEL = new_config.get("INDEX_REQ_CHANNEL", info.INDEX_REQ_CHANNEL)
+        info.FILE_STORE_CHANNEL = new_config.get("FILE_STORE_CHANNEL", info.FILE_STORE_CHANNEL)
+        info.MELCOW_NEW_USERS = new_config.get("MELCOW_NEW_USERS", info.MELCOW_NEW_USERS)
+        info.PROTECT_CONTENT = new_config.get("PROTECT_CONTENT", info.PROTECT_CONTENT)
+        info.PUBLIC_FILE_STORE = new_config.get("PUBLIC_FILE_STORE", info.PUBLIC_FILE_STORE)
+        info.KEEP_ORIGINAL_CAPTION = new_config.get("KEEP_ORIGINAL_CAPTION", info.KEEP_ORIGINAL_CAPTION)
+
+        # Optionally, log the sync action
+        logger.info("Database configuration synced successfully.")
+
+        # Create a success message
+        end_time = time.time()
+        elapsed_ms = (end_time - start_time) * 1000
+        await status_message.edit_text(
+            f"Database configuration synced successfully in {elapsed_ms:.3f} ms."
+        )
+    except Exception as e:
+        logger.exception("Error syncing configuration from database.")
+        await status_message.edit_text(f"Error syncing configuration: {e}")
