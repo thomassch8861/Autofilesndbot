@@ -1155,7 +1155,7 @@ async def syncdb_command(client, message):
         info.BATCH_FILE_CAPTION = new_config.get("BATCH_FILE_CAPTION", info.BATCH_FILE_CAPTION)
         info.IMDB_TEMPLATE = new_config.get("IMDB_TEMPLATE", info.IMDB_TEMPLATE)
         info.LONG_IMDB_DESCRIPTION = new_config.get("LONG_IMDB_DESCRIPTION", info.LONG_IMDB_DESCRIPTION)
-        info.SPELL_CHECK_REPLY = new_config.get("SPELL_CHECK_REPLY", info.SPELL_CHECK_REPLY)
+        #info.SPELL_CHECK_REPLY = new_config.get("SPELL_CHECK_REPLY", info.SPELL_CHECK_REPLY)
         info.MAX_LIST_ELM = new_config.get("MAX_LIST_ELM", info.MAX_LIST_ELM)
         info.INDEX_REQ_CHANNEL = new_config.get("INDEX_REQ_CHANNEL", info.INDEX_REQ_CHANNEL)
         info.FILE_STORE_CHANNEL = new_config.get("FILE_STORE_CHANNEL", info.FILE_STORE_CHANNEL)
@@ -1163,6 +1163,8 @@ async def syncdb_command(client, message):
         info.PROTECT_CONTENT = new_config.get("PROTECT_CONTENT", info.PROTECT_CONTENT)
         info.PUBLIC_FILE_STORE = new_config.get("PUBLIC_FILE_STORE", info.PUBLIC_FILE_STORE)
         info.KEEP_ORIGINAL_CAPTION = new_config.get("KEEP_ORIGINAL_CAPTION", info.KEEP_ORIGINAL_CAPTION)
+        info.SPELL_CHECK_REPLY = new_config.get("SPELL_CHECK_REPLY", info.SPELL_CHECK_REPLY)
+        logger.info("Updated SPELL_CHECK_REPLY: %s", info.SPELL_CHECK_REPLY)
 
         # Optionally, log the sync action
         logger.info("Database configuration synced successfully.")
