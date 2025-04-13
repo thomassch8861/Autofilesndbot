@@ -1115,7 +1115,7 @@ async def restart_bot(client, message):
     restart_msg = await message.reply_text("♻️ Restarting bot... Please wait.")
     # Save the chat id and message id to a file (using a delimiter, e.g., "|")
     with open(RESTART_FILE, "w") as f:
-        f.write(f"{message.chat.id}|{restart_msg.message_id}")
+        f.write(f"{message.chat.id}|{restart_msg.id}")
     # Wait a moment to ensure the message is sent
     await asyncio.sleep(2)
     # Restart the current process (Docker will auto-restart the container)
