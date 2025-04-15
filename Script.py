@@ -4,7 +4,7 @@ class script(object):
 
 I'm Drama Searcher bot 🤫
 
-Here you can Search Korean dramas and Korean Movies  in Our Bot. Just Start Typing....
+Here you can Search Asian Content in Our Bot. Just Start Typing....
 
 Click on the button below to add me your group and enjoy new dramas with your friends and family members ❤️
 
